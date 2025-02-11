@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="userMapper">
+
+    <resultMap id="userResultMap" type="com.example.spring.users.UsersVo">
+        <result property="userId" column="USER_ID" />
+        <result property="password" column="PASSWORD" />
+        <result property="username" column="USERNAME" /> <!-- 이 부분 수정 -->
+        <result property="tel" column="TEL" />
+        <result property="email" column="EMAIL" />
+        <result property="status" column="STATUS" />
+        <result property="lastLoginAt" column="LAST_LOGIN_AT" />
+        <result property="createdAt" column="CREATED_AT" />
+        <result property="updatedAt" column="UPDATED_AT" />
+    </resultMap>
+
+    <!-- 사용자 등록 -->
+    <insert id="create" parameterType="com.example.spring.users.UsersVo">
+        <![CDATA[
+        INSERT INTO USERS (
+            USER_ID, 
+            PASSWORD, 
+            USERNAME,  
+            TEL, 
+            EMAIL
+        ) VALUES (
+            #{userId}, 
+            #{password}, 
+            #{username}, 
+            #{tel}, 
+            #{email}
+        )
+        ]]>
+    </insert>
+
+    <!-- 사용자 정보 -->
+    <select id="read" parameterType="String" resultMap="userResultMap">
+        <![CDATA[
+        SELECT * FROM USERS WHERE 1=1
+        ]]>
+        <if test="userId != null">
+            <![CDATA[
+            AND USER_ID = #{userId}
+            ]]>
+        </if>
+        <if test="email != null">
+            <![CDATA[
+            AND EMAIL = #{email}
+            ]]>
+        </if>
+    </select>
+
+    <!-- 사용자 수정 -->
+    <update id="update" parameterType="com.example.spring.users.UsersVo">
+        <![CDATA[
+        UPDATE USERS SET
+        ]]>
+        <if test="username != null">
+            <![CDATA[
+            USERNAME = #{username},  
+            ]]>
+        </if>
+        <if test="password != null">
+            <![CDATA[
+            PASSWORD = #{password},
+            ]]>
+        </if>
+        <if test="tel != null">
+            <![CDATA[
+            TEL = #{tel},
+            ]]>
+        </if>
+        <if test="email != null">
+            <![CDATA[
+            EMAIL = #{email},
+            ]]>
+        </if>
+        <if test="status != null">
+            <![CDATA[
+            STATUS = #{status},
+            ]]>
+        </if>
+        <if test="lastLoginAt != null">
+            <![CDATA[
+            LAST_LOGIN_AT = #{lastLoginAt}
+            ]]>
+        </if>
+        <![CDATA[
+        WHERE USER_ID = #{userId}
+        ]]>
+    </update>
+
+    <!-- 사용자 목록 -->
+    <select id="list" resultMap="userResultMap">
+        <![CDATA[
+        SELECT
+            USER_ID,
+            USERNAME, 
+            PHONE,
+            EMAIL,
+            STATUS,
+            LAST_LOGIN_AT,
+            CREATED_AT,
+            UPDATED_AT
+        FROM
+            USERS
+        WHERE 1=1
+        ]]>
+        <if test="searchType != null and searchKeyword != null">
+            <choose>
+                <when test="userId != null">
+                    <![CDATA[
+                    AND USER_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'username'">
+                    <![CDATA[
+                    AND USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'tel'">
+                    <![CDATA[
+                    AND TEL LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'email'">
+                    <![CDATA[
+                    AND EMAIL LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'all'">
+                    <![CDATA[
+                    AND (
+                        USER_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR TEL LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR EMAIL LIKE CONCAT('%', #{searchKeyword}, '%')
+                    )
+                    ]]>
+                </when>
+            </choose>
+        </if>
+        <![CDATA[
+        ORDER BY USER_ID DESC
+        LIMIT #{offset}, #{pageSize}
+        ]]>
+    </select>
+
+    <!-- 전체 사용자 수 조회 -->
+    <select id="getTotalCount" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*) FROM USERS
+        WHERE 1=1
+        ]]>
+        <if test="searchType != null and searchKeyword != null">
+            <choose>
+                <when test="userId != null">
+                    <![CDATA[
+                    AND USER_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'username'">
+                    <![CDATA[
+                    AND USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'tel'">
+                    <![CDATA[
+                    AND TEL LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'email'">
+                    <![CDATA[
+                    AND EMAIL LIKE CONCAT('%', #{searchKeyword}, '%')
+                    ]]>
+                </when>
+                <when test="searchType == 'all'">
+                    <![CDATA[
+                    AND (
+                        USER_ID LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR TEL LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR EMAIL LIKE CONCAT('%', #{searchKeyword}, '%')
+                    )
+                    ]]>
+                </when>
+            </choose>
+        </if>
+    </select>
+
+</mapper>
