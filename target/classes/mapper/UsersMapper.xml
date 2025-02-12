@@ -51,36 +51,38 @@
         </if>
     </select>
 
-    <!-- 사용자 수정 -->
     <update id="update" parameterType="com.example.spring.users.UsersVo">
         <![CDATA[
-        UPDATE USERS SET
+        UPDATE USERS 
+        SET
         ]]>
-        <if test="username != null">
-            <![CDATA[
-            USERNAME = #{username},  
-            ]]>
-        </if>
-        <if test="password != null">
-            <![CDATA[
-            PASSWORD = #{password},
-            ]]>
-        </if>
-        <if test="tel != null">
-            <![CDATA[
-            TEL = #{tel},
-            ]]>
-        </if>
-        <if test="email != null">
-            <![CDATA[
-            EMAIL = #{email},
-            ]]>
-        </if>
-        <if test="status != null">
-            <![CDATA[
-            STATUS = #{status},
-            ]]>
-        </if>
+        <trim suffixOverrides=",">
+            <if test="username != null">
+                <![CDATA[
+                USERNAME = #{username},  
+                ]]>
+            </if>
+            <if test="password != null">
+                <![CDATA[
+                PASSWORD = #{password},
+                ]]>
+            </if>
+            <if test="tel != null">
+                <![CDATA[
+                TEL = #{tel},
+                ]]>
+            </if>
+            <if test="email != null">
+                <![CDATA[
+                EMAIL = #{email},
+                ]]>
+            </if>
+            <if test="status != null">
+                <![CDATA[
+                STATUS = #{status}
+                ]]>
+            </if>
+        </trim>
         <![CDATA[
         WHERE USER_ID = #{userId}
         ]]>

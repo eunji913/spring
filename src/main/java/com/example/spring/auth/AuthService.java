@@ -37,9 +37,17 @@ public class AuthService {
         // 랜덤 비밀번호 생성
         String rndPassword = UUID.randomUUID().toString().substring(0, 8);
         String encodedPassword = passwordEncoder.encode(rndPassword);
-        usersVo.setPassword(encodedPassword);
 
-        int updated = usersDao.update(usersVo);
+
+            // 기존 유저 정보 가져오기 (userId 포함)
+        UsersVo existingUser = usersDao.read(usersVo);
+        if (existingUser == null) {
+            return null; // 존재하지 않는 사용자
+        }
+
+        // 비밀번호 업데이트
+        existingUser.setPassword(encodedPassword);
+        int updated = usersDao.update(existingUser);
 
         if (updated > 0) {
             return rndPassword;

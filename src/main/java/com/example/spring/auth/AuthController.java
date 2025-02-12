@@ -232,13 +232,13 @@ public class AuthController {
         return mav;
     }
 
-    // 비밀번호 초기화(찾기아님?)
+    // 비밀번호 초기화
     @GetMapping("/reset-password")
     public ModelAndView resetPassword() {
         return new ModelAndView("auth/reset_password");
     }
 
-    // 비밀번호 초기화(찾기아님?)
+    // 비밀번호 초기화
     @PostMapping("/reset-password")
     public ModelAndView resetPassword(UsersVo usersVo, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         ModelAndView mav = new ModelAndView();
