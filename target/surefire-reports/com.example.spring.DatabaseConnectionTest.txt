@@ -1,4 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.example.spring.DatabaseConnectionTest
 -------------------------------------------------------------------------------
+<<<<<<< HEAD
 Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.123 s -- in com.example.spring.DatabaseConnectionTest
+=======
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.458 s -- in com.example.spring.DatabaseConnectionTest
+>>>>>>> 1c71a0a99ea78b1bab494d881b5e2fb1dad88c28
