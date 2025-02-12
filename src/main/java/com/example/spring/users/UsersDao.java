@@ -26,6 +26,12 @@ public class UsersDao {
 
     // 사용자 수정
     public int update(UsersVo usersVo) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", usersVo.getUserId());
+        params.put("username", usersVo.getUsername());
+        params.put("tel", usersVo.getTel());
+        params.put("email", usersVo.getEmail());
+        params.put("status", usersVo.getStatus());
         return sqlSession.update("userMapper.update", usersVo);
     }
 

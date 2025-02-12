@@ -11,4 +11,5 @@ public class UsersVo {
     private String email;
     private String createdAt;
     private String updatedAt;
+    private String status;
 }

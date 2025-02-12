@@ -36,6 +36,17 @@ public class UsersService {
 
     // 사용자 수정
     public boolean update(UsersVo usersVo) {
+        // 비밀번호 변경 여부 확인
+        if (usersVo.getPassword() != null && !usersVo.getPassword().isEmpty()) {
+            // 비밀번호가 변경되었으면 암호화
+            String encodedPassword = passwordEncoder.encode(usersVo.getPassword());
+            usersVo.setPassword(encodedPassword);
+        } else {
+            // 비밀번호가 null 또는 빈 문자열인 경우 기존 비밀번호를 그대로 유지
+            usersVo.setPassword(null);
+        }
+
+        // 사용자 정보를 업데이트
         int result = usersDao.update(usersVo);
         return result > 0;
     }
