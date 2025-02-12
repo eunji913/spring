@@ -81,11 +81,6 @@
             STATUS = #{status},
             ]]>
         </if>
-        <if test="lastLoginAt != null">
-            <![CDATA[
-            LAST_LOGIN_AT = #{lastLoginAt}
-            ]]>
-        </if>
         <![CDATA[
         WHERE USER_ID = #{userId}
         ]]>

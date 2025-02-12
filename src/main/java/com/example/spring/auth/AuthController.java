@@ -127,11 +127,17 @@ public class AuthController {
 
     // 프로필 업데이트 페이지를 GET 방식으로 처리
     @GetMapping("/update-profile")
-    public ModelAndView updateProfilePage() {
+    public ModelAndView updateProfilePage(HttpServletRequest request) {
         ModelAndView mav = new ModelAndView();
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("user") != null) {
+            UsersVo currentUser = (UsersVo) session.getAttribute("user");
+            mav.addObject("user", currentUser);  // 현재 사용자 정보를 모델에 추가
+        }
         mav.setViewName("auth/update_profile");
         return mav;
     }
+
 
     // 프로필 수정 (POST 요청)
     @PostMapping("/update-profile")
@@ -156,7 +162,7 @@ public class AuthController {
         return mav;
     }
 
-    // 프로필 업데이트 페이지를 GET 방식으로 처리
+    // 비밀번호 업데이트 페이지를 GET 방식으로 처리
     @GetMapping("/update-password")
     public ModelAndView updatePasswordPage() {
         ModelAndView mav = new ModelAndView();
@@ -203,6 +209,12 @@ public class AuthController {
     }
 
     // 아이디 찾기
+    @GetMapping("/find-user-id")
+    public ModelAndView findUserId() {
+        return new ModelAndView("auth/find_user_id");
+    }
+
+    // 아이디 찾기
     @PostMapping("/find-user-id")
     public ModelAndView findUserId(UsersVo usersVo, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         ModelAndView mav = new ModelAndView();
@@ -215,6 +227,31 @@ public class AuthController {
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "아이디를 찾을 수 없습니다.");
             mav.setViewName("redirect:/auth/find-user-id");
+        }
+
+        return mav;
+    }
+
+    // 비밀번호 초기화(찾기아님?)
+    @GetMapping("/reset-password")
+    public ModelAndView resetPassword() {
+        return new ModelAndView("auth/reset_password");
+    }
+
+    // 비밀번호 초기화(찾기아님?)
+    @PostMapping("/reset-password")
+    public ModelAndView resetPassword(UsersVo usersVo, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        ModelAndView mav = new ModelAndView();
+
+        UsersVo user = usersService.read(usersVo);        
+
+        if (user != null) {
+            String rndPassword = authService.resetPassword(usersVo);
+            redirectAttributes.addFlashAttribute("successMessage", "초기화된 비밀번호는 " + rndPassword + "입니다.");
+            mav.setViewName("redirect:/auth/reset-password");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "아이디를 찾을 수 없습니다.");
+            mav.setViewName("redirect:/auth/reset-password");
         }
 
         return mav;
