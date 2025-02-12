@@ -19,7 +19,7 @@ public class UsersDao {
         return sqlSession.insert("userMapper.create", usersVo);
     }
 
-    // 사용자 정보
+    // 사용자 보기
     public UsersVo read(UsersVo usersVo) {
         return sqlSession.selectOne("userMapper.read", usersVo);
     }

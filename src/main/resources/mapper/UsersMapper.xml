@@ -56,7 +56,6 @@
         UPDATE USERS 
         SET
         ]]>
-<<<<<<< HEAD
         <trim suffixOverrides=",">
             <if test="username != null">
                 <![CDATA[
@@ -84,33 +83,7 @@
                 ]]>
             </if>
         </trim>
-=======
-        <if test="username != null">
-            <![CDATA[
-            USERNAME = #{username},  
-            ]]>
-        </if>
-        <if test="password != null">
-            <![CDATA[
-            PASSWORD = #{password},
-            ]]>
-        </if>
-        <if test="tel != null">
-            <![CDATA[
-            TEL = #{tel},
-            ]]>
-        </if>
-        <if test="email != null">
-            <![CDATA[
-            EMAIL = #{email},
-            ]]>
-        </if>
-        <if test="status != null">
-            <![CDATA[
-            STATUS = #{status},
-            ]]>
-        </if>
->>>>>>> 1c71a0a99ea78b1bab494d881b5e2fb1dad88c28
+
         <![CDATA[
         WHERE USER_ID = #{userId}
         ]]>

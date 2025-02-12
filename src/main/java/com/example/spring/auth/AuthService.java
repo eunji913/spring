@@ -3,6 +3,7 @@ package com.example.spring.auth;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,9 +26,12 @@ public class AuthService {
     public UsersVo login(UsersVo usersVo) {
         UsersVo existUsersVo = usersDao.read(usersVo);
 
-        if (existUsersVo != null && passwordEncoder.matches(usersVo.getPassword(), existUsersVo.getPassword())) {
+        if (existUsersVo != null) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        if (passwordEncoder.matches(usersVo.getPassword(), existUsersVo.getPassword())) { // ✅ 올바른 방식
             return existUsersVo;
         }
+    }
 
         return null;
     }

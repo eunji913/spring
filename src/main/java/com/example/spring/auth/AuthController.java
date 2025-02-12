@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -141,12 +142,18 @@ public class AuthController {
 
     // 프로필 수정 (POST 요청)
     @PostMapping("/update-profile")
-    public ModelAndView updateProfile(UsersVo usersVo, RedirectAttributes redirectAttributes) {
+    public ModelAndView updateProfile(UsersVo usersVo, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         ModelAndView mav = new ModelAndView();
 
         try {
             boolean updated = usersService.update(usersVo);
             if (updated) {
+
+                HttpSession session = request.getSession(false);
+                if (session != null) {
+                    UsersVo updatedUser = usersService.read(usersVo); // DB에서 최신 정보 가져오기
+                    session.setAttribute("user", updatedUser); // 세션 업데이트
+                }
                 redirectAttributes.addFlashAttribute("successMessage", "프로필이 수정되었습니다.");
                 mav.setViewName("redirect:/auth/profile");
             } else {
@@ -174,31 +181,66 @@ public class AuthController {
     @PostMapping("/update-password")
     public ModelAndView updatePassword(@RequestParam("password") String password,
                                        @RequestParam("password1") String password1,
+                                       @RequestParam("password2") String password2,
                                        HttpServletRequest request, RedirectAttributes redirectAttributes) {
         ModelAndView mav = new ModelAndView();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         try {
-            String userId = (String) request.getSession().getAttribute("userId");
-            UsersVo existUsersVo = new UsersVo();
-            existUsersVo.setUserId(userId);
-
-            UsersVo existUser = usersService.read(existUsersVo);
-
-            if (!existUser.getPassword().equals(password)) {
-                redirectAttributes.addFlashAttribute("errorMessage", "기존 비밀번호가 일치하지 않습니다.");
-                mav.setViewName("redirect:/auth/update-password");
-            } else {
-                existUsersVo.setPassword(password1);
-                boolean updated = usersService.updatePassword(existUsersVo);
-
-                if (updated) {
-                    redirectAttributes.addFlashAttribute("successMessage", "비밀번호가 수정되었습니다.");
-                    mav.setViewName("redirect:/auth/profile");
-                } else {
-                    redirectAttributes.addFlashAttribute("errorMessage", "비밀번호 수정에 실패했습니다.");
-                    mav.setViewName("redirect:/auth/update-password");
-                }
+            HttpSession session = request.getSession(false);
+            if (session == null || session.getAttribute("user") == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+                mav.setViewName("redirect:/auth/login");
+                return mav;
             }
+    
+            UsersVo loggedInUser = (UsersVo) session.getAttribute("user");
+            UsersVo latestUserData = usersService.read(loggedInUser); // DB에서 최신 데이터 가져오기
+    
+            if (password == null || password.trim().isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "현재 비밀번호를 입력해주세요.");
+                mav.setViewName("redirect:/auth/update-password");
+                return mav;
+            }
+
+            // 현재 비밀번호 확인
+            if (!passwordEncoder.matches(password, latestUserData.getPassword())) {
+                redirectAttributes.addFlashAttribute("errorMessage", "현재 비밀번호가 일치하지 않습니다.");
+                mav.setViewName("redirect:/auth/update-password");
+                return mav;
+            }
+
+            // 새 비밀번호 길이 검증
+            if (password1.length() < 8 || password1.length() > 20) {
+                redirectAttributes.addFlashAttribute("errorMessage", "새 비밀번호는 8자 이상, 20자 이하로 입력하세요.");
+                mav.setViewName("redirect:/auth/update-password");
+                return mav;
+            }
+
+            if (!password1.equals(password2)) {
+                redirectAttributes.addFlashAttribute("errorMessage", "새 비밀번호가 일치하지 않습니다.");
+                mav.setViewName("redirect:/auth/update-password");
+                return mav;
+            }
+
+
+            latestUserData.setPassword(passwordEncoder.encode(password1));
+            boolean updated = usersService.updatePassword(latestUserData);
+
+            if (updated) {
+                // 최신 정보 다시 가져와서 세션에 반영
+                UsersVo updatedUser = usersService.read(latestUserData);
+                session.setAttribute("user", updatedUser);
+    
+                System.out.println("새 비밀번호 (DB 저장값): " + updatedUser.getPassword());
+    
+                redirectAttributes.addFlashAttribute("successMessage", "비밀번호가 성공적으로 변경되었습니다.");
+                mav.setViewName("redirect:/auth/profile");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "비밀번호 수정에 실패했습니다.");
+                mav.setViewName("redirect:/auth/update-password");
+            }
+            
         } catch (Exception e) {
             logger.error("Password update error occurred: ", e);  // 오류 로깅
             redirectAttributes.addFlashAttribute("errorMessage", "비밀번호 수정 중 오류가 발생했습니다.");
