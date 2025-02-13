@@ -8,9 +8,11 @@
         <result property="title" column="TITLE" />
         <result property="content" column="CONTENT" />
         <result property="username" column="USERNAME" />
-        <result property="password" column="PASSWORD" />
+        <result property="createdBy" column="CREATED_BY" />
         <result property="createdAt" column="CREATED_AT" />
         <result property="updatedAt" column="UPDATED_AT" />
+        <result property="fileName" column="FILE_NAME" />
+        <result property="originalFileName" column="ORIGINAL_FILE_NAME" />
     </resultMap>
 
     <!-- 게시글 등록 -->
@@ -25,7 +27,7 @@
         ) VALUES (
             #{title}, 
             #{content}, 
-            #{createdBy},
+            #{createdBy}, 
             #{fileName},
             #{originalFileName}
         )
@@ -36,49 +38,49 @@
     <select id="list" resultMap="postsResultMap">
         <![CDATA[
         SELECT
-            ID,
-            TITLE,
-            CONTENT,
-            USERNAME,
-            PASSWORD,
-            CREATED_AT,
-            UPDATED_AT,
-            FILE_NAME,
-            ORIGINAL_FILE_NAME
+            A.ID,
+            A.TITLE,
+            A.CONTENT,
+            A.CREATED_BY,
+            A.CREATED_AT,
+            A.UPDATED_AT,
+            A.FILE_NAME,
+            A.ORIGINAL_FILE_NAME,
+            B.USERNAME
         FROM
-            POSTS
-        WHERE 1=1
+            POSTS A, USERS B
+        WHERE A.CREATED_BY = B.USER_ID
         ]]>
         <if test="searchType != null and searchKeyword != null">
             <choose>
                 <when test="searchType == 'title'">
                     <![CDATA[
-                    AND TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+                    AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
                     ]]>
                 </when>
                 <when test="searchType == 'content'">
                     <![CDATA[
-                    AND CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
+                    AND A.CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
                     ]]>
                 </when>
                 <when test="searchType == 'username'">
                     <![CDATA[
-                    AND USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    AND B.USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
                     ]]>
                 </when>
                 <when test="searchType == 'all'">
                     <![CDATA[
                     AND (
-                        TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
-                        OR CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
-                        OR USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                        A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR A.CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR B.USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
                     )
                     ]]>
                 </when>
             </choose>
         </if>
         <![CDATA[
-        ORDER BY ID DESC
+        ORDER BY A.ID DESC
         LIMIT #{offset}, #{pageSize}
         ]]>
     </select>
@@ -87,19 +89,20 @@
     <select id="read" resultMap="postsResultMap">
         <![CDATA[
         SELECT
-            ID,
-            TITLE,
-            CONTENT,
-            USERNAME,
-            PASSWORD,
-            CREATED_AT,
-            UPDATED_AT,
-            FILE_NAME,
-            ORIGINAL_FILE_NAME
+            A.ID,
+            A.TITLE,
+            A.CONTENT,
+            A.CREATED_BY,
+            A.CREATED_AT,
+            A.UPDATED_AT,
+            A.FILE_NAME,
+            A.ORIGINAL_FILE_NAME,
+            B.USERNAME 
         FROM
-            POSTS
+            POSTS A
+        LEFT JOIN USERS B ON A.CREATED_BY = B.USER_ID
         WHERE
-            ID = #{id}
+            A.ID = #{id}
         ]]>
     </select>
 
@@ -111,8 +114,6 @@
         SET
             TITLE = #{title},
             CONTENT = #{content},
-            USERNAME = #{username},
-            PASSWORD = #{password},
             FILE_NAME = #{fileName},
             ORIGINAL_FILE_NAME = #{originalFileName}
         WHERE
@@ -133,32 +134,31 @@
     <!-- 전체 게시글 수 조회 -->
     <select id="getTotalCount" resultType="int">
         <![CDATA[
-        SELECT COUNT(*) FROM POSTS
-        WHERE 1=1
+        SELECT COUNT(*) FROM POSTS A, USERS B WHERE A.CREATED_BY = B.USER_ID
         ]]>
         <if test="searchType != null and searchKeyword != null">
             <choose>
                 <when test="searchType == 'title'">
                     <![CDATA[
-                    AND TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+                    AND A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
                     ]]>
                 </when>
                 <when test="searchType == 'content'">
                     <![CDATA[
-                    AND CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
+                    AND A.CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
                     ]]>
                 </when>
                 <when test="searchType == 'username'">
                     <![CDATA[
-                    AND USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                    AND B.USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
                     ]]>
                 </when>
                 <when test="searchType == 'all'">
                     <![CDATA[
                     AND (
-                        TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
-                        OR CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
-                        OR USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
+                        A.TITLE LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR A.CONTENT LIKE CONCAT('%', #{searchKeyword}, '%')
+                        OR B.USERNAME LIKE CONCAT('%', #{searchKeyword}, '%')
                     )
                     ]]>
                 </when>

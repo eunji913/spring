@@ -12,7 +12,7 @@
         <!-- 검색, 등록 버튼 -->
         <div class="d-flex justify-content-between mb-3">
             <!-- 검색 폼 -->
-            <form action="/posts/" method="GET">
+            <form action="/posts" method="GET">
                 <div class="input-group">
                     <select name="searchType" class="form-select">
                         <option value="all" ${searchType == 'all' ? 'selected' : ''}>전체</option>
@@ -29,7 +29,7 @@
             </form>
 
             <!-- 게시글 등록 버튼 -->
-            <a href="/posts/create/" class="btn btn-primary">게시글 등록</a>
+            <a href="/posts/create" class="btn btn-primary">게시글 등록</a>
         </div>
         <!--// 검색, 등록 버튼 -->
 

@@ -1,42 +1,57 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%@ include file="../base/top.jsp" %>
 <%@ include file="../base/navbar.jsp" %>
 <%@ include file="../base/title.jsp" %>
 <%@ include file="../base/message.jsp" %>
 
+<!-- 세션에서 로그인된 사용자 가져오기 -->
+<%
+    String userId = (String) session.getAttribute("userId");
+    String postOwner = request.getAttribute("postsVo") != null ? ((com.example.spring.posts.PostsVo) request.getAttribute("postsVo")).getCreatedBy() : "";
+%>
+
 <!-- 페이지 내용 -->
 <div class="row">
     <div class="col-12">
-        <!-- 게시글 보기 -->
         <div class="card mb-3">
             <h5 class="card-header text-primary">
                 <strong>${postsVo.title}</strong>
             </h5>
             <div class="card-body">  
                 <div class="mb-3 text-muted">
-                    글쓴이: ${postsVo.username} | 등록일시: ${postsVo.createdAt.substring(0, 16)} | 수정일시: ${postsVo.createdAt.substring(0, 16)}
+                    글쓴이: ${postsVo.username} | 등록일시: ${postsVo.createdAt} | 수정일시: ${postsVo.updatedAt}
                 </div>
-                <div class="mb-3">
-                    첨부파일: <a href="/posts/${postsVo.id}/download" class="btn btn-outline-primary">${postsVo.originalFileName}</a>
-                </div>
+
+                <!-- 첨부파일 다운로드 (파일이 있을 경우에만) -->
+                <c:if test="${not empty postsVo.fileName}">
+                    <div class="mb-3">
+                        첨부파일: <a href="/posts/${postsVo.id}/download" class="btn btn-outline-primary">${postsVo.originalFileName}</a>
+                    </div>
+                </c:if>
+
                 <div class="mb-3">
                     ${postsVo.content}
                 </div>
             </div>
         </div>
+
+        <!-- 버튼 영역 -->
         <div>
             <a href="/posts/" class="btn btn-primary">목록</a>
-            <a href="/posts/${postsVo.id}/update" class="btn btn-warning">수정</a>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">삭제</button>
+
+            <!-- 작성자만 수정 & 삭제 가능 -->
+            <c:if test="${userId eq postsVo.createdBy}">
+                <a href="/posts/${postsVo.id}/update" class="btn btn-warning">수정</a>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">삭제</button>
+            </c:if>
         </div>
-        <!--// 게시글 보기 -->
     </div>
 </div>
-<!--// 페이지 내용 -->
 
 <!-- 삭제 모달 -->
+<c:if test="${userId eq postsVo.createdBy}">
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -50,10 +65,7 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <p class="text-danger">삭제된 데이터는 복구할 수 없습니다.</p>
-                        <p>비밀번호를 입력해주세요.</p>
-                    </div>
-                    <div>
-                        <input type="password" id="password" name="password" placeholder="비밀번호" class="form-control">
+                        <p>정말 삭제하시겠습니까?</p>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -64,14 +76,6 @@
         </div>
     </div>
 </div>
-<!-- 삭제 모달 -->
+</c:if>
 
 <%@ include file="../base/script.jsp" %>
-
-<!-- script -->
-<script>
-    /* 자바스크립트 */
-</script>
-<!--// script -->
-
-<%@ include file="../base/bottom.jsp" %>

@@ -80,37 +80,49 @@
             }
         }
 
-        // 게시글 폼 검증
-        $('#createForm').validate({
-            rules: {
-                title: {
-                    required: true,
-                    minlength: 2,
-                    maxlength: 100
-                },
-            },
-            messages: {
-                title: {
-                    required: '제목을 입력하세요.',
-                    minlength: '제목은 최소 2자 이상 입력하세요.',
-                    maxlength: '제목은 최대 100자 이하로 입력하세요.'
-                },
-            },
-            errorClass: 'is-invalid',
-            validClass: 'is-valid',
-            errorPlacement: function(error, element) {
-                error.addClass('invalid-feedback');
-                element.closest('.mb-3').append(error);
-            },
-            submitHandler: function(form) {
-                // 폼 제출 전 내용 검증
-                if (validateContent()) {
-                    form.submit();
-                }
-                return false;
-            }
-        });
+// 게시글 폼 검증
+$('#createForm').validate({
+    rules: {
+        title: {
+            required: true,
+            minlength: 2,
+            maxlength: 100
+        },
+        content: {
+            required: true,
+            minlength: 2,  // 내용은 최소 2자 이상
+            maxlength: 1000 // 내용은 최대 1000자 이하
+        },
+    },
+    messages: {
+        title: {
+            required: '제목을 입력하세요.',
+            minlength: '제목은 최소 2자 이상 입력하세요.',
+            maxlength: '제목은 최대 100자 이하로 입력하세요.'
+        },
+        content: {
+            required: '내용을 입력하세요.',
+            minlength: '내용은 최소 2자 이상 입력하세요.',
+            maxlength: '내용은 최대 1000자 이하로 입력하세요.'
+        },
+    },
+    errorClass: 'is-invalid',
+    validClass: 'is-valid',
+    errorPlacement: function(error, element) {
+        error.addClass('invalid-feedback');
+        element.closest('.mb-3').append(error);
+    },
+    submitHandler: function(form) {
+        // 폼 제출 전 내용 검증
+        if (validateContent()) {
+            form.submit();
+        }
+        return false;
+    }
+});
     });
+
+
 </script>
 <!--// script -->
 

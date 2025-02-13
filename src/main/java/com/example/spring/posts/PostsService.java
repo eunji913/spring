@@ -58,4 +58,14 @@ public class PostsService {
         int result = postsDao.delete(postsVo.getId());
         return result > 0;
     }
+
+    public boolean delete(int id) {
+        int result = postsDao.delete(id);
+        return result > 0;
+    
+    }
+    
+
+
+    
 }

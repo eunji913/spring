@@ -23,13 +23,23 @@
                         <label for="content" class="form-label">내용</label>
                         <textarea class="form-control" id="content" name="content" rows="5" placeholder="내용을 입력하세요" required>${postsVo.content}</textarea>
                     </div>
+                    <c:if test="${not empty postsVo.fileName}">
+                        <div class="mb-3"> 
+                            <div class="mb-2">  
+                                <span>현재 파일: <a href="/posts/${postsVo.id}/download">${postsVo.originalFileName}</a></span>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="deleteFile" id="deleteFile" value="true">
+                                <label class="form-check-label text-danger" for="deleteFile">
+                                    파일 삭제
+                                </label>
+                            </div>
+                        </div>
+                    </c:if>
                     <div class="mb-3">
-                        <label for="username" class="form-label">작성자</label>
-                        <input type="text" class="form-control" id="username" name="username" placeholder="작성자를 입력하세요" required value="${postsVo.username}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">비밀번호</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+                        <label class="form-label">첨부 파일</label>
+                        <input type="file" class="form-control" id="uploadFile" name="uploadFile">
+                        <small class="form-text text-muted">새 파일을 선택하면 기존 파일은 자동으로 삭제됩니다.</small>
                     </div>
                 </div>
             </div>
@@ -91,16 +101,6 @@
                     minlength: 2,
                     maxlength: 100
                 },
-                username: {
-                    required: true,
-                    minlength: 2,
-                    maxlength: 10
-                },
-                password: {
-                    required: true,
-                    minlength: 4,
-                    maxlength: 20
-                }
             },
             messages: {
                 title: {
@@ -108,16 +108,6 @@
                     minlength: '제목은 최소 2자 이상 입력하세요.',
                     maxlength: '제목은 최대 100자 이하로 입력하세요.'
                 },
-                username: {
-                    required: '작성자를 입력하세요.',
-                    minlength: '작성자는 최소 2자 이상 입력하세요.',
-                    maxlength: '작성자는 최대 10자 이하로 입력하세요.'
-                },
-                password: {
-                    required: '비밀번호를 입력하세요.',
-                    minlength: '비밀번호는 최소 4자 이상 입력하세요.',
-                    maxlength: '비밀번호는 최대 20자 이하로 입력하세요.'
-                }
             },
             errorClass: 'is-invalid',
             validClass: 'is-valid',

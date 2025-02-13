@@ -31,6 +31,24 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+
+    // 게시글 목록 페이지
+    @GetMapping("/posts")
+    public String viewPosts(HttpServletRequest request) {
+        // 로그인된 사용자 정보 가져오기
+        UsersVo loggedInUser = (UsersVo) request.getSession().getAttribute("user");
+        if (loggedInUser == null) {
+            // 로그인하지 않은 사용자일 경우 로그인 페이지로 리디렉션
+            return "redirect:/auth/login";
+        }
+
+        // 게시글 목록 처리 로직 (예: 서비스 호출, 데이터베이스 조회 등)
+        // 여기서는 게시글 목록을 뷰에 전달하는 예시입니다.
+        // postsService.getPosts()와 같은 메서드를 호출할 수 있습니다.
+        
+        return "posts/list"; // 게시글 목록을 보여주는 JSP 또는 HTML 페이지
+    }
+
     // 회원가입 페이지 (GET /register)
     @GetMapping("/register")
     public String registerPage() {
@@ -71,39 +89,23 @@ public class AuthController {
     @PostMapping("/login")
     public ModelAndView login(UsersVo usersVo, HttpServletRequest request, RedirectAttributes redirectAttributes) {
         ModelAndView mav = new ModelAndView();
-    
         try {
-            // null 체크 추가
-            if (usersVo == null || usersVo.getUserId() == null || usersVo.getPassword() == null) {
-                redirectAttributes.addFlashAttribute("errorMessage", "아이디 또는 비밀번호가 입력되지 않았습니다.");
-                mav.setViewName("redirect:/auth/login");
-                return mav;
-            }
-    
             usersVo = authService.login(usersVo);
-    
             if (usersVo != null) {
                 HttpSession session = request.getSession(true);
-                session.setAttribute("user", usersVo);
-                session.setAttribute("isLoggedIn", true);
-    
-                logger.info("User {} logged in successfully.", usersVo.getUserId());  // 로그 기록
+                session.setAttribute("user", usersVo);  // 전체 User 객체 저장
+                session.setAttribute("userId", usersVo.getUserId());  // 아이디만 따로 저장
+                session.setAttribute("isLoggedIn", true);  // 로그인 상태 플래그 추가
     
                 mav.setViewName("redirect:/auth/profile");
                 return mav;
             }
-    
             redirectAttributes.addFlashAttribute("errorMessage", "아이디 또는 비밀번호가 일치하지 않습니다.");
             mav.setViewName("redirect:/auth/login");
-    
         } catch (Exception e) {
-            logger.error("Login error occurred for user {}: ", usersVo != null ? usersVo.getUserId() : "Unknown", e);  // 오류 로깅
-            HttpSession session = request.getSession(false);
-            if (session != null) session.invalidate();
             redirectAttributes.addFlashAttribute("errorMessage", "로그인 처리 중 오류가 발생했습니다.");
             mav.setViewName("redirect:/auth/login");
         }
-    
         return mav;
     }
 
@@ -294,6 +296,36 @@ public class AuthController {
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "아이디를 찾을 수 없습니다.");
             mav.setViewName("redirect:/auth/reset-password");
+        }
+
+        return mav;
+    }
+
+
+    // 회원 탈퇴
+    @PostMapping("/delete-account")
+    public ModelAndView delete(HttpServletRequest request, @RequestParam("password") String password, RedirectAttributes redirectAttributes) {
+        ModelAndView mav = new ModelAndView();
+
+        // 사용자 정보
+        String userId = (String) request.getSession().getAttribute("userId");
+        UsersVo usersVo = new UsersVo();
+        usersVo.setUserId(userId);
+
+        try {
+            // 비밀번호를 포함하여 서비스에서 삭제 처리
+            boolean delete = usersService.delete(usersVo, password);
+
+            if (delete) {
+                redirectAttributes.addFlashAttribute("successMessage", "회원 탈퇴가 완료되었습니다.");
+                mav.setViewName("redirect:/auth/logout");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "비밀번호가 일치하지 않습니다.");
+                mav.setViewName("redirect:/auth/profile");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "회원 탈퇴 중 오류가 발생했습니다.");
+            mav.setViewName("redirect:/auth/profile");
         }
 
         return mav;
