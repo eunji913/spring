@@ -76,12 +76,25 @@ public class UsersService {
 
     // 사용자 삭제
     public boolean delete(UsersVo usersVo, String password) {
-        // 비밀번호 검증
-        if (!passwordEncoder.matches(password, usersVo.getPassword())) {
+        // DB에서 사용자 정보 조회 (usersVo에 userId, username, email 등이 설정되어 있음)
+        UsersVo dbUser = usersDao.read(usersVo);
+        if (dbUser == null) {
+            return false;  // 해당 사용자가 존재하지 않음
+        }
+        
+        // 입력받은 이름과 이메일이 DB 정보와 일치하는지 확인
+        if (!dbUser.getUsername().equals(usersVo.getUsername()) ||
+            !dbUser.getEmail().equals(usersVo.getEmail())) {
             return false;
         }
-
-        int result = usersDao.delete(usersVo.getUserId());
+        
+        // 입력받은 비밀번호가 DB에 저장된 암호화된 비밀번호와 일치하는지 확인
+        if (!passwordEncoder.matches(password, dbUser.getPassword())) {
+            return false;
+        }
+        
+        // 모든 조건이 만족되면 삭제 실행
+        int result = usersDao.delete(dbUser.getUserId());
         return result > 0;
     }
 }

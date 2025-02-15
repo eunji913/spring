@@ -302,16 +302,19 @@ public class AuthController {
     }
 
 
-    // 아이디 찾기
+    // 회원탈퇴
     @GetMapping("/delete-account")
     public ModelAndView deleteAccount() {
         return new ModelAndView("auth/delete_account");
     }
 
-
+    // 회원탈퇴
     @PostMapping("/delete-account")
     public ModelAndView delete(HttpServletRequest request, 
-                                @RequestParam("password") String password, 
+                                @RequestParam("userId") String userId,
+                                @RequestParam("password") String password,
+                                @RequestParam("username") String username,
+                                @RequestParam("email") String email,     
                                 RedirectAttributes redirectAttributes) {
         ModelAndView mav = new ModelAndView();
 
@@ -324,7 +327,10 @@ public class AuthController {
         }
 
         // 세션에 저장된 전체 사용자 정보를 가져옴
-        UsersVo usersVo = (UsersVo) session.getAttribute("user");
+        UsersVo usersVo = new UsersVo();
+        usersVo.setUserId(userId);
+        usersVo.setUsername(username);
+        usersVo.setEmail(email);
 
         // 비밀번호와 함께 삭제 메서드 호출
         boolean deleted = usersService.delete(usersVo, password);
