@@ -302,34 +302,41 @@ public class AuthController {
     }
 
 
-    // 회원 탈퇴
+    // 아이디 찾기
+    @GetMapping("/delete-account")
+    public ModelAndView deleteAccount() {
+        return new ModelAndView("auth/delete_account");
+    }
+
+
     @PostMapping("/delete-account")
-    public ModelAndView delete(HttpServletRequest request, @RequestParam("password") String password, RedirectAttributes redirectAttributes) {
+    public ModelAndView delete(HttpServletRequest request, 
+                                @RequestParam("password") String password, 
+                                RedirectAttributes redirectAttributes) {
         ModelAndView mav = new ModelAndView();
 
-        // 사용자 정보
-        String userId = (String) request.getSession().getAttribute("userId");
-        UsersVo usersVo = new UsersVo();
-        usersVo.setUserId(userId);
+        // 세션 및 로그인 상태 확인
+        HttpSession session = request.getSession(false);
+        if (session == null || session.getAttribute("user") == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
+            mav.setViewName("redirect:/auth/login");
+            return mav;
+        }
 
-        try {
-            // 비밀번호를 포함하여 서비스에서 삭제 처리
-            boolean delete = usersService.delete(usersVo, password);
+        // 세션에 저장된 전체 사용자 정보를 가져옴
+        UsersVo usersVo = (UsersVo) session.getAttribute("user");
 
-            if (delete) {
-                redirectAttributes.addFlashAttribute("successMessage", "회원 탈퇴가 완료되었습니다.");
-                mav.setViewName("redirect:/auth/logout");
-            } else {
-                redirectAttributes.addFlashAttribute("errorMessage", "비밀번호가 일치하지 않습니다.");
-                mav.setViewName("redirect:/auth/profile");
-            }
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "회원 탈퇴 중 오류가 발생했습니다.");
+        // 비밀번호와 함께 삭제 메서드 호출
+        boolean deleted = usersService.delete(usersVo, password);
+
+        if (deleted) {
+            redirectAttributes.addFlashAttribute("successMessage", "회원 탈퇴가 완료되었습니다.");
+            mav.setViewName("redirect:/auth/logout");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "회원 탈퇴에 실패했습니다.");
             mav.setViewName("redirect:/auth/profile");
         }
 
         return mav;
     }
-
-    
 }

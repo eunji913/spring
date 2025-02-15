@@ -54,13 +54,14 @@
                     minlength: 4,
                     maxlength: 20
                 },
+                password: {
+                    required: true,
+                    minlength: 8,
+                    maxlength: 20
+                },
                 username: {
                     required: true,
                     maxlength: 50
-                },
-                tel: {
-                    required: true,
-                    maxlength: 20
                 },
                 email: {
                     required: true,
@@ -69,18 +70,24 @@
                 }
             },
             messages: {
-                firstName: {
-                    required: '이름을 입력하세요.'
+                userId: {
+                    required: '아이디를 입력하세요.',
+                    minlength: '아이디는 최소 4자 이상이어야 합니다.',
+                    maxlength: '아이디는 최대 20자까지 가능합니다.'
+                },
+                password: {
+                    required: '비밀번호를 입력하세요.',
+                    minlength: '비밀번호는 최소 8자 이상이어야 합니다.',
+                    maxlength: '비밀번호는 최대 20자까지 가능합니다.'
+                },
+                username: {
+                    required: '이름을 입력하세요.',
+                    maxlength: '이름은 최대 10자까지 가능합니다.'
                 },
                 email: {
                     required: '이메일을 입력하세요.',
-                    email: '이메일 형식이 올바르지 않습니다.'
-                },
-                username: {
-                    required: '아이디를 입력하세요.'
-                },
-                password: {
-                    required: '비밀번호를 입력하세요.'
+                    email: '올바른 이메일 형식이 아닙니다.',
+                    maxlength: '이메일은 최대 50자까지 가능합니다.'
                 }
             },
             errorClass: 'is-invalid',
@@ -95,5 +102,6 @@
         });
     });
 </script>
-</body>
-</html>
+<!--// script -->
+
+<%@ include file="../base/bottom.jsp" %>

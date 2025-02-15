@@ -145,6 +145,16 @@
         ]]>
     </select>
 
+    <!-- 사용자 삭제 -->
+    <delete id="delete">
+        <![CDATA[
+        DELETE FROM
+            USERS
+        WHERE
+            USER_ID = #{value}
+        ]]>
+    </delete>
+
     <!-- 전체 사용자 수 조회 -->
     <select id="getTotalCount" resultType="int">
         <![CDATA[
