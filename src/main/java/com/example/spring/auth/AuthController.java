@@ -226,7 +226,7 @@ public class AuthController {
             }
 
 
-            latestUserData.setPassword(passwordEncoder.encode(password1));
+            latestUserData.setPassword(password1);
             boolean updated = usersService.updatePassword(latestUserData);
 
             if (updated) {

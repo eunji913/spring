@@ -27,11 +27,13 @@ public class AuthService {
         UsersVo existUsersVo = usersDao.read(usersVo);
 
         if (existUsersVo != null) {
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        if (passwordEncoder.matches(usersVo.getPassword(), existUsersVo.getPassword())) { // ✅ 올바른 방식
-            return existUsersVo;
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            if (passwordEncoder.matches(usersVo.getPassword(), existUsersVo.getPassword())) { 
+                return existUsersVo;
+            }
         }
-    }
+
+        
 
         return null;
     }
