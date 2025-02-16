@@ -51,6 +51,7 @@
         </if>
     </select>
 
+    <!-- 사용자 수정 -->
     <update id="update" parameterType="com.example.spring.users.UsersVo">
         <![CDATA[
         UPDATE USERS 
