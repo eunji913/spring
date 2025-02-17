@@ -17,17 +17,17 @@ public class UsersDao {
 
     // 사용자 등록
     public int create(UsersVo usersVo) {
-        return sqlSession.insert("userMapper.create", usersVo);
+        return sqlSession.insert("usersMapper.create", usersVo);
     }
 
     // 사용자 보기
     public UsersVo read(UsersVo usersVo) {
-        return sqlSession.selectOne("userMapper.read", usersVo);
+        return sqlSession.selectOne("usersMapper.read", usersVo);
     }
 
     // 사용자 수정
     public int update(UsersVo usersVo) {
-        return sqlSession.update("userMapper.update", usersVo);
+        return sqlSession.update("usersMapper.update", usersVo);
     }
 
     // 사용자 목록
@@ -37,7 +37,7 @@ public class UsersDao {
         params.put("pageSize", pageSize);
         params.put("searchType", searchType);
         params.put("searchKeyword", searchKeyword);
-        return sqlSession.selectList("userMapper.list", params);
+        return sqlSession.selectList("usersMapper.list", params);
     }
 
     // 사용자 전체 수
@@ -45,11 +45,11 @@ public class UsersDao {
         Map<String, Object> params = new HashMap<>();
         params.put("searchType", searchType);
         params.put("searchKeyword", searchKeyword);
-        return sqlSession.selectOne("userMapper.getTotalCount", params);
+        return sqlSession.selectOne("usersMapper.getTotalCount", params);
     }
 
     // 사용자 삭제
     public int delete(String userId) {
-        return sqlSession.delete("userMapper.delete", userId);
+        return sqlSession.delete("usersMapper.delete", userId);
     }
 }

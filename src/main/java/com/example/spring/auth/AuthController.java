@@ -104,6 +104,10 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("errorMessage", "아이디 또는 비밀번호가 일치하지 않습니다.");
             mav.setViewName("redirect:/auth/login");
         } catch (Exception e) {
+            e.printStackTrace();
+            HttpSession session = request.getSession(false);
+            session.invalidate();
+
             redirectAttributes.addFlashAttribute("errorMessage", "로그인 처리 중 오류가 발생했습니다.");
             mav.setViewName("redirect:/auth/login");
         }
@@ -338,7 +342,7 @@ public class AuthController {
 
         if (deleted) {
             redirectAttributes.addFlashAttribute("successMessage", "회원 탈퇴가 완료되었습니다.");
-            mav.setViewName("redirect:/auth/logout");
+            mav.setViewName("redirect:/auth/login");
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "회원 탈퇴에 실패했습니다.");
             mav.setViewName("redirect:/auth/profile");

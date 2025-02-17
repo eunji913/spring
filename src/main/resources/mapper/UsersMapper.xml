@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="userMapper">
+<mapper namespace="usersMapper">
 
-    <resultMap id="userResultMap" type="com.example.spring.users.UsersVo">
+    <resultMap id="usersResultMap" type="com.example.spring.users.UsersVo">
         <result property="userId" column="USER_ID" />
         <result property="password" column="PASSWORD" />
         <result property="username" column="USERNAME" /> <!-- 이 부분 수정 -->
@@ -34,14 +34,35 @@
         ]]>
     </insert>
 
-    <!-- 사용자 정보 -->
-    <select id="read" parameterType="String" resultMap="userResultMap">
+    <!-- 사용자 보기 -->
+    <select id="read" resultMap="usersResultMap">
         <![CDATA[
-        SELECT * FROM USERS WHERE 1=1
+        SELECT
+            USER_ID,
+            USERNAME,
+            TEL,
+            EMAIL,
+            PASSWORD,
+            CREATED_AT,
+            UPDATED_AT
+        FROM
+            USERS
+        WHERE
+            1 = 1
         ]]>
         <if test="userId != null">
             <![CDATA[
             AND USER_ID = #{userId}
+            ]]>
+        </if>
+        <if test="username != null">
+            <![CDATA[
+            AND USERNAME = #{username}
+            ]]>
+        </if>
+        <if test="tel != null">
+            <![CDATA[
+            AND TEL = #{tel}
             ]]>
         </if>
         <if test="email != null">
@@ -91,7 +112,7 @@
     </update>
 
     <!-- 사용자 목록 -->
-    <select id="list" resultMap="userResultMap">
+    <select id="list" resultMap="usersResultMap">
         <![CDATA[
         SELECT
             USER_ID,
