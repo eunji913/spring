@@ -6,13 +6,13 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;////?
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.ModelAttribute;///?
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestParam;//비번수정회원탈퇴
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -51,9 +51,10 @@ public class AuthController {
 
     // 회원가입 페이지 (GET /register)
     @GetMapping("/register")
-    public String registerPage() {
-        return "auth/register";  // 회원가입 페이지로 이동
+    public ModelAndView register() {
+        return new ModelAndView("auth/register");
     }
+
 
     // 회원가입 처리 (POST 요청)
     @PostMapping("/register")
@@ -78,12 +79,12 @@ public class AuthController {
     }
 
     // 로그인 페이지 요청 (GET 요청)
-    @GetMapping("/login")
-    public ModelAndView loginPage() {
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("auth/login"); // 로그인 페이지 뷰 이름
-        return mav;
-    }
+        @GetMapping("/login")
+        public ModelAndView loginPage() {
+            ModelAndView mav = new ModelAndView();
+            mav.setViewName("auth/login"); // 로그인 페이지 뷰 이름
+            return mav;
+        }
 
     // 로그인 처리 (POST 요청)
     @PostMapping("/login")

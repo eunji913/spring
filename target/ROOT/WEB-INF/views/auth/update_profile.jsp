@@ -17,7 +17,7 @@
                 <div class="card-body">                
                     <div class="mb-3">
                         <label for="userId" class="form-label">아이디</label>
-                        <input type="text" class="form-control" id="userId" name="userId" placeholder="아이디" required>
+                        <input type="text" class="form-control" id="userId" name="userId" value="${user.userId}" required readonly>
                     </div>     
                     <div class="mb-3">
                         <label for="username" class="form-label">이름</label>
@@ -51,11 +51,6 @@
         // 프로필 수정 폼 검증
         $('#updateProfileForm').validate({
             rules: {
-                userId: {
-                    required: true,
-                    minlength: 4,
-                    maxlength: 20
-                },
                 username: {
                     required: true,
                     maxlength: 50
@@ -71,11 +66,6 @@
                 }
             },
             messages: {
-                userId: {
-                    required: '아이디를 입력하세요.',
-                    minlength: '아이디는 최소 4자 이상이어야 합니다.',
-                    maxlength: '아이디는 최대 20자까지 가능합니다.'
-                },
                 username: {
                     required: '이름을 입력하세요.',
                     maxlength: '이름은 최대 50자까지 가능합니다.'
